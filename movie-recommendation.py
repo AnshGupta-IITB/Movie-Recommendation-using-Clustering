@@ -1,7 +1,7 @@
 # Movie Recommendation System using Clustering (K-Means)
 # Dataset: MovieLens 100k
 
-# Step 1: Import Libraries
+# Import Libraries
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import StandardScaler
@@ -11,7 +11,7 @@ from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-# Step 2: Load Dataset
+# Load Dataset
 column_names = ['user_id', 'movie_id', 'rating', 'timestamp']
 ratings = pd.read_csv('ratings.csv')
 
@@ -22,14 +22,14 @@ movies.columns = ['movie_id', 'title']
 # Merge ratings with movie titles
 data = pd.merge(ratings, movies, on='movie_id')
 
-# Step 3: Create User-Movie Matrix
+# Create User-Movie Matrix
 user_movie_matrix = data.pivot_table(index='user_id', columns='title', values='rating').fillna(0)
 
-# Step 4: Feature Scaling
+# Feature Scaling
 scaler = StandardScaler()
 user_movie_scaled = scaler.fit_transform(user_movie_matrix)
 
-# Step 5: Determine Optimal Number of Clusters
+# Determine Optimal Number of Clusters
 sil_scores = []
 for k in range(2, 11):
     kmeans = KMeans(n_clusters=k, random_state=42)
@@ -43,12 +43,12 @@ plt.ylabel('Silhouette Score')
 plt.title('Optimal Number of Clusters')
 plt.show()
 
-# Step 6: Fit K-Means with chosen clusters (example: k=4)
+# Fit K-Means with chosen clusters (example: k=4)
 kmeans = KMeans(n_clusters=4, random_state=42)
 user_clusters = kmeans.fit_predict(user_movie_scaled)
 user_movie_matrix['cluster'] = user_clusters
 
-# Step 7: Movie Recommendation Function
+# Movie Recommendation Function
 def recommend_movies(user_id, num_recommendations=5):
     cluster = user_movie_matrix.loc[user_id, 'cluster']
     cluster_users = user_movie_matrix[user_movie_matrix['cluster'] == cluster]
@@ -61,7 +61,7 @@ def recommend_movies(user_id, num_recommendations=5):
 print("Movies recommended for User 1:")
 print(recommend_movies(1))
 
-# Step 8: Visualize Clusters
+# Visualize Clusters
 pca = PCA(n_components=2)
 reduced_data = pca.fit_transform(user_movie_scaled)
 plt.figure(figsize=(8,6))
